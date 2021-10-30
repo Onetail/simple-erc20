@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js"
+  },
+  "dependencies": {
+    "solc": "^0.8.9",
+    "web3": "^1.6.0"
+  }
+}
