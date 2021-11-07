@@ -1,5 +1,5 @@
 
-pragma solidity >=0.5.0;
+pragma solidity >=0.5.0 <0.9.0 ;
  
 // ----------------------------------------------------------------------------
 // Safe maths
@@ -28,13 +28,13 @@ library SafeMath {
 // ERC Token Standard #20 Interface
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
 // ----------------------------------------------------------------------------
-contract ERC20Interface {
-    function totalSupply() public view returns (uint);
-    function balanceOf(address tokenOwner) public view returns (uint balance);
-    function allowance(address tokenOwner, address spender) public view returns (uint remaining);
-    function transfer(address to, uint tokens) public returns (bool success);
-    function approve(address spender, uint tokens) public returns (bool success);
-    function transferFrom(address from, address to, uint tokens) public returns (bool success);
+interface ERC20Interface {
+    function totalSupply() external view returns (uint);
+    function balanceOf(address tokenOwner) external view returns (uint balance);
+    function allowance(address tokenOwner, address spender) external view returns (uint remaining);
+    function transfer(address to, uint tokens) external returns (bool success);
+    function approve(address spender, uint tokens) external returns (bool success);
+    function transferFrom(address from, address to, uint tokens) external returns (bool success);
  
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
@@ -46,8 +46,8 @@ contract ERC20Interface {
 //
 // Borrowed from MiniMeToken
 // ----------------------------------------------------------------------------
-contract ApproveAndCallFallBack {
-    function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public;
+interface ApproveAndCallFallBack {
+    function receiveApproval(address from, uint256 tokens, address token, bytes memory data) external;
 }
  
  
@@ -60,7 +60,7 @@ contract Owned {
  
     event OwnershipTransferred(address indexed _from, address indexed _to);
  
-    constructor() public {
+    constructor()  {
         owner = msg.sender;
     }
  
@@ -100,7 +100,7 @@ contract WayneErc20 is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
-    constructor() public {
+    constructor() {
         symbol = 'Wayne';
         name = 'WC';
         decimals = 3;
@@ -113,7 +113,7 @@ contract WayneErc20 is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     // Total supply
     // ------------------------------------------------------------------------
-    function totalSupply() public view returns (uint) {
+    function totalSupply() override public view returns (uint) {
         return _totalSupply.sub(balances[address(0)]);
     }
  
@@ -121,7 +121,7 @@ contract WayneErc20 is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     // Get the token balance for account `tokenOwner`
     // ------------------------------------------------------------------------
-    function balanceOf(address tokenOwner) public view returns (uint balance) {
+    function balanceOf(address tokenOwner) override public view returns (uint balance) {
         return balances[tokenOwner];
     }
  
@@ -131,7 +131,7 @@ contract WayneErc20 is ERC20Interface, Owned {
     // - Owner's account must have sufficient balance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
-    function transfer(address to, uint tokens) public returns (bool success) {
+    function transfer(address to, uint tokens) override public returns (bool success) {
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
         emit Transfer(msg.sender, to, tokens);
@@ -147,7 +147,7 @@ contract WayneErc20 is ERC20Interface, Owned {
     // recommends that there are no checks for the approval double-spend attack
     // as this should be implemented in user interfaces
     // ------------------------------------------------------------------------
-    function approve(address spender, uint tokens) public returns (bool success) {
+    function approve(address spender, uint tokens) override public returns (bool success) {
         allowed[msg.sender][spender] = tokens;
         emit Approval(msg.sender, spender, tokens);
         return true;
@@ -163,7 +163,7 @@ contract WayneErc20 is ERC20Interface, Owned {
     // - Spender must have sufficient allowance to transfer
     // - 0 value transfers are allowed
     // ------------------------------------------------------------------------
-    function transferFrom(address from, address to, uint tokens) public returns (bool success) {
+    function transferFrom(address from, address to, uint tokens) override public returns (bool success) {
         balances[from] = balances[from].sub(tokens);
         allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
         balances[to] = balances[to].add(tokens);
@@ -176,7 +176,7 @@ contract WayneErc20 is ERC20Interface, Owned {
     // Returns the amount of tokens approved by the owner that can be
     // transferred to the spender's account
     // ------------------------------------------------------------------------
-    function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
+    function allowance(address tokenOwner, address spender) override public view returns (uint remaining) {
         return allowed[tokenOwner][spender];
     }
  
@@ -197,9 +197,12 @@ contract WayneErc20 is ERC20Interface, Owned {
     // ------------------------------------------------------------------------
     // Don't accept ETH
     // ------------------------------------------------------------------------
-    function () external payable {
+    fallback () external payable {
         revert();
     }
+
+    receive () external payable {}
+
  
  
     // ------------------------------------------------------------------------
