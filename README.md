@@ -7,3 +7,6 @@
 
 - `truffle compile`
 - `truffle migrate --reset`
+
+- `yarn ` install package
+- `yarn start ` run
