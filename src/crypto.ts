@@ -24,20 +24,28 @@ export class Crypto {
   }
 
   async balanceOf(address: string) {
-    const balance = this.contract.methods.balanceOf(address);
+    return await this.contract.methods.balanceOf(address);
+  }
 
-    return balance;
+  async totalSupply() {
+    return await this.contract.methods.totalSupply();
+  }
+
+  async transfer(toAddress: string, token: number) {
+    return await this.contract.methods.transfer(toAddress, token);
   }
 
   async test() {
-    console.log('\x1b[32m', '\n---- Debug ----\n');
-    console.log(
-      '\x1b[36m',
-      'web3.eth.defaultAccount = ',
-      this.web3.eth.defaultAccount,
-      this.contract.defaultAccount,
-      this.contract.transactionBlockTimeout,
+    const giveMoney = await this.transfer(
+      '0xd5fE901DCdb28c029d8316476cef05C606034fa5',
+      100,
     );
+    console.log('\x1b[32m', '\n---- Debug ----\n');
+    console.log('\x1b[36m', 'giveMoney = ', giveMoney);
     console.log('\x1b[32m', '\n---------------', '\x1b[0m');
+  }
+
+  async deploy() {
+    await this.contract.deploy();
   }
 }
